@@ -51,7 +51,7 @@ const main: Configuration = {
   ...base,
   target: 'electron-main',
   entry: {
-    main: './src/client/main.ts',
+    main: './src/server/main.ts',
   },
 }
 
