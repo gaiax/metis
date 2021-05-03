@@ -8,14 +8,19 @@ import './App.global.css'
 
 const Hello = () => {
   return (
-    <CodeMirror
-      value="<h1>I ♥ react-codemirror2</h1>"
-      options={{
-        mode: 'markdown',
-        theme: 'material',
-        lineNumbers: true,
-      }}
-    />
+    <div className="container">
+      <div className="editor">
+        <CodeMirror
+          value="<h1>I ♥ react-codemirror2</h1>"
+          options={{
+            mode: 'markdown',
+            theme: 'material',
+            lineNumbers: true,
+          }}
+        />
+      </div>
+      <div className="preview"></div>
+    </div>
   )
 }
 
