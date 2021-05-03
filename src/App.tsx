@@ -15,6 +15,9 @@ const Hello = () => {
       text: value,
     })
   })
+  ipcRenderer.on('file-open', async (_event, value) => {
+    setValue(value)
+  })
 
   return (
     <CodeMirror

@@ -4,7 +4,9 @@ import {
   shell,
   BrowserWindow,
   MenuItemConstructorOptions,
+  dialog,
 } from 'electron'
+import { readFileSync } from 'fs'
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string
@@ -87,6 +89,31 @@ export default class MenuBuilder {
     const subMenuFile: DarwinMenuItemConstructorOptions = {
       label: 'File',
       submenu: [
+        {
+          label: 'Open',
+          accelerator: 'Command+O',
+          click: (_menuItem, browserWindow) => {
+            // 場所とファイル名を選択
+            const paths = dialog.showOpenDialogSync(this.mainWindow, {
+              buttonLabel: '開く', // ボタンのラベル
+              // filters: [{ name: 'Text', extensions: ['txt', 'text'] }],
+              properties: ['openFile', 'createDirectory'],
+            })
+            // キャンセルで閉じた場合
+            if (paths === undefined) {
+              return
+            }
+
+            // ファイルの内容を返却
+            try {
+              const path = paths[0]
+              const value = readFileSync(path)
+              browserWindow?.webContents.send('file-open', value.toString())
+            } catch (error) {
+              console.error(error)
+            }
+          },
+        },
         {
           label: 'Save',
           accelerator: 'Command+S',
@@ -219,6 +246,27 @@ export default class MenuBuilder {
           {
             label: '&Open',
             accelerator: 'Ctrl+O',
+            click: (_menuItem, browserWindow) => {
+              // 場所とファイル名を選択
+              const paths = dialog.showOpenDialogSync(this.mainWindow, {
+                buttonLabel: '開く', // ボタンのラベル
+                // filters: [{ name: 'Text', extensions: ['txt', 'text'] }],
+                properties: ['openFile', 'createDirectory'],
+              })
+              // キャンセルで閉じた場合
+              if (paths === undefined) {
+                return
+              }
+
+              // ファイルの内容を返却
+              try {
+                const path = paths[0]
+                const value = readFileSync(path)
+                browserWindow?.webContents.send('file-open', value.toString())
+              } catch (error) {
+                console.error(error)
+              }
+            },
           },
           {
             label: '&Close',
@@ -229,7 +277,7 @@ export default class MenuBuilder {
           },
           {
             label: '&Save',
-            accelerator: 'Ctrl+s',
+            accelerator: 'Ctrl+S',
             click: (_menuItem, browserWindow) => {
               browserWindow?.webContents.send('start-file-save')
             },
