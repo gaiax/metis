@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint global-require: off, no-console: off */
 
 /**
@@ -94,6 +95,7 @@ const createWindow = async () => {
     }
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   mainWindow.on('closed', () => {})
 
   const menuBuilder = new MenuBuilder(mainWindow)
@@ -107,7 +109,7 @@ const createWindow = async () => {
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
-  new AppUpdater();
+  new AppUpdater()
 }
 
 /**
@@ -138,8 +140,12 @@ ipcMain.handle('file-save', async (event, data) => {
   console.log(data)
   // 場所とファイル名を選択
   const path = dialog.showSaveDialogSync(mainWindow, {
+    defaultPath: 'book.md',
     buttonLabel: '保存', // ボタンのラベル
-    filters: [{ name: 'Text', extensions: ['txt', 'text'] }],
+    filters: [
+      { name: 'Markdown files', extensions: ['md'] },
+      { name: 'Text files', extensions: ['txt'] },
+    ],
     properties: [
       'createDirectory', // ディレクトリの作成を許可 (macOS)
     ],
