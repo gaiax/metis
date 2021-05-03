@@ -91,7 +91,7 @@ export default class MenuBuilder {
           label: 'Save',
           accelerator: 'Command+S',
           click: (_menuItem, browserWindow) => {
-            browserWindow?.webContents.send('hoge')
+            browserWindow?.webContents.send('start-file-save')
           },
         },
       ],
@@ -231,7 +231,7 @@ export default class MenuBuilder {
             label: '&Save',
             accelerator: 'Ctrl+s',
             click: (_menuItem, browserWindow) => {
-              browserWindow?.webContents.send('hoge')
+              browserWindow?.webContents.send('start-file-save')
             },
           },
         ],
