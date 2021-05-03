@@ -8,7 +8,10 @@ import './App.global.css'
 import { ipcRenderer } from 'electron'
 
 const Hello = () => {
-  const [value, setValue] = useState('<h1>I ♥ react-codemirror2</h1>')
+  const [initialValue, setInitialValue] = useState(
+    '<h1>I ♥ react-codemirror2</h1>'
+  )
+  const [value, setValue] = useState(initialValue)
 
   useEffect(() => {
     const onStartFileSave = async () => {
@@ -25,12 +28,12 @@ const Hello = () => {
   }, [value])
 
   ipcRenderer.on('file-open', async (_event, value) => {
-    setValue(value)
+    setInitialValue(value)
   })
 
   return (
     <CodeMirror
-      value={value}
+      value={initialValue}
       options={{
         mode: 'markdown',
         theme: 'material',
