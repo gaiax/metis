@@ -134,10 +134,8 @@ app.on('activate', () => {
 
 /**
  * [IPC] 指定ファイルを保存する
- *
  */
 ipcMain.handle('file-save-as', async (event, data) => {
-  console.log(data)
   // 場所とファイル名を選択
   const path = dialog.showSaveDialogSync(mainWindow, {
     defaultPath: 'book.md',
@@ -158,6 +156,25 @@ ipcMain.handle('file-save-as', async (event, data) => {
   // ファイルの内容を返却
   try {
     writeFileSync(path, data.text)
+    mainWindow.webContents.send('set-filename', path)
+
+    return {
+      status: true,
+      path: path,
+    }
+  } catch (error) {
+    return { status: false, message: error.message }
+  }
+})
+
+/**
+ * [IPC] 指定ファイルを上書き保存する
+ */
+ipcMain.handle('file-save', async (event, data) => {
+  // ファイルの内容を返却
+  try {
+    writeFileSync(data.path, data.text)
+    mainWindow.webContents.send('set-filename', path)
 
     return {
       status: true,

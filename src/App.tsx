@@ -8,6 +8,7 @@ import './App.global.css'
 import { ipcRenderer } from 'electron'
 
 const Hello = () => {
+  const [filename, setFilename] = useState<string | null>(null)
   const [initialValue, setInitialValue] = useState(
     '<h1>I ♥ react-codemirror2</h1>'
   )
@@ -27,8 +28,33 @@ const Hello = () => {
     }
   }, [value])
 
+  useEffect(() => {
+    const onSetFilename = async () => {
+      if (filename === null) {
+        await ipcRenderer.invoke('file-save-as', {
+          text: value,
+        })
+      } else {
+        await ipcRenderer.invoke('file-save', {
+          path: filename,
+          text: value,
+        })
+      }
+    }
+
+    ipcRenderer.on('start-file-save', onSetFilename)
+
+    return () => {
+      ipcRenderer.removeListener('start-file-save', onSetFilename)
+    }
+  }, [filename, value])
+
   ipcRenderer.on('file-open', async (_event, value) => {
     setInitialValue(value)
+  })
+
+  ipcRenderer.on('set-filename', async (_event, filename) => {
+    setFilename(filename)
   })
 
   return (
