@@ -41,7 +41,7 @@ const checkIncludeReturn: { (target: string): boolean } = (target: string) => {
   return false
 }
 
-const checkSpecialLine = (target: string) => {
+export const checkSpecialLine = (target: string) => {
   // h1やリストなどか確認する
   if (target.length === 0) return false
   const withoutSpaceTarget = target.replace(' ', '').replace('\t', '')
