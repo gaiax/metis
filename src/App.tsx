@@ -5,8 +5,13 @@ import { UnControlled as CodeMirror } from 'react-codemirror2'
 import 'codemirror/mode/markdown/markdown'
 import 'codemirror/mode/javascript/javascript'
 import './App.global.css'
+import { ipcRenderer } from 'electron'
 
 const Hello = () => {
+  ipcRenderer.on('hoge', (_event, _arg) => {
+    alert('message')
+  })
+
   return (
     <CodeMirror
       value="<h1>I ♥ react-codemirror2</h1>"
