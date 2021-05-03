@@ -227,6 +227,13 @@ export default class MenuBuilder {
               this.mainWindow.close()
             },
           },
+          {
+            label: '&Save',
+            accelerator: 'Ctrl+s',
+            click: (_menuItem, browserWindow) => {
+              browserWindow?.webContents.send('hoge')
+            },
+          },
         ],
       },
       {
