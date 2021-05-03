@@ -271,6 +271,7 @@ export default class MenuBuilder {
                 const path = paths[0]
                 const value = readFileSync(path)
                 browserWindow?.webContents.send('file-open', value.toString())
+                browserWindow?.webContents.send('set-filename', path)
               } catch (error) {
                 console.error(error)
               }
@@ -288,6 +289,13 @@ export default class MenuBuilder {
             accelerator: 'Ctrl+S',
             click: (_menuItem, browserWindow) => {
               browserWindow?.webContents.send('start-file-save')
+            },
+          },
+          {
+            label: '&Save As',
+            accelerator: 'Ctrl+Shift+S',
+            click: (_menuItem, browserWindow) => {
+              browserWindow?.webContents.send('start-file-save-as')
             },
           },
         ],
