@@ -161,3 +161,15 @@ ipcMain.handle('file-save', async (event, data) => {
     return { status: false, message: error.message }
   }
 })
+
+export const openSubWindow = () => {
+  console.log('run')
+
+  const subWindow = new BrowserWindow({
+    parent: mainWindow,
+    webPreferences: {
+      nodeIntegration: true,
+    },
+  })
+  subWindow.loadURL(`file://${__dirname}/index.html#/config`)
+}

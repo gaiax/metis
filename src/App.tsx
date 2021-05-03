@@ -44,6 +44,7 @@ export default function App(): React.ReactElement {
     <Router>
       <Switch>
         <Route path="/" component={Hello} />
+        <Route path="/config" component={Hello} />
       </Switch>
     </Router>
   )

@@ -6,6 +6,8 @@ import {
   MenuItemConstructorOptions,
 } from 'electron'
 
+import { openSubWindow } from './main.dev'
+
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string
   submenu?: DarwinMenuItemConstructorOptions[] | Menu
@@ -232,6 +234,13 @@ export default class MenuBuilder {
             accelerator: 'Ctrl+s',
             click: (_menuItem, browserWindow) => {
               browserWindow?.webContents.send('start-file-save')
+            },
+          },
+          {
+            label: '&Config',
+            accelerator: 'Ctrl+,',
+            click: () => {
+              openSubWindow()
             },
           },
         ],
