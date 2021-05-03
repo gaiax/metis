@@ -28,6 +28,20 @@ app.whenReady().then(async () => {
     // })
     // .then((name) => console.log(`Added Extension:  ${name}`))
     // .catch((err) => console.log('An error occurred: ', err))
+
+    // hot reload
+    require('electron-reload')(__dirname, {
+      electron: path.join(
+        __dirname,
+        '..',
+        '..',
+        'node_modules',
+        '.bin',
+        'electron'
+      ),
+      forceHardReset: true,
+      hardResetMethod: 'exit',
+    })
   }
 
   createWindow()
