@@ -136,7 +136,7 @@ app.on('activate', () => {
  * [IPC] 指定ファイルを保存する
  *
  */
-ipcMain.handle('file-save', async (event, data) => {
+ipcMain.handle('file-save-as', async (event, data) => {
   console.log(data)
   // 場所とファイル名を選択
   const path = dialog.showSaveDialogSync(mainWindow, {

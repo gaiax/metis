@@ -15,15 +15,15 @@ const Hello = () => {
 
   useEffect(() => {
     const onStartFileSave = async () => {
-      await ipcRenderer.invoke('file-save', {
+      await ipcRenderer.invoke('file-save-as', {
         text: value,
       })
     }
 
-    ipcRenderer.on('start-file-save', onStartFileSave)
+    ipcRenderer.on('start-file-save-as', onStartFileSave)
 
     return () => {
-      ipcRenderer.removeListener('start-file-save', onStartFileSave)
+      ipcRenderer.removeListener('start-file-save-as', onStartFileSave)
     }
   }, [value])
 
