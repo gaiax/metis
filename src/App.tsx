@@ -18,7 +18,7 @@ const Hello = () => {
 
   return (
     <CodeMirror
-      value={value}
+      value="<h1>I ♥ react-codemirror2</h1>"
       options={{
         mode: 'markdown',
         theme: 'material',
