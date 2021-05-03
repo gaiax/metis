@@ -280,7 +280,8 @@
         }
       }
     ],
-    "singleQuote": true
+    "singleQuote": true,
+    "semi": false
   },
   "renovate": {
     "extends": [
