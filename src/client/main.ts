@@ -23,7 +23,9 @@ const createWindow = () => {
 
 app.whenReady().then(async () => {
   if (process.env.NODE_ENV === 'development') {
-    await installExtension([REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS])
+    // await installExtension([REACT_DEVELOPER_TOOLS], {
+    //   forceDownload: true,
+    // })
     // .then((name) => console.log(`Added Extension:  ${name}`))
     // .catch((err) => console.log('An error occurred: ', err))
   }

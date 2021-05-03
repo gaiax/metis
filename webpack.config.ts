@@ -51,7 +51,7 @@ const main: Configuration = {
   ...base,
   target: 'electron-main',
   entry: {
-    main: './src/main.ts',
+    main: './src/client/main.ts',
   },
 }
 
@@ -59,7 +59,7 @@ const preload: Configuration = {
   ...base,
   target: 'electron-preload',
   entry: {
-    preload: './src/preload.ts',
+    preload: './src/client/preload.ts',
   },
 }
 
@@ -67,11 +67,11 @@ const renderer: Configuration = {
   ...base,
   target: 'web',
   entry: {
-    renderer: './src/renderer.tsx',
+    renderer: './src/client/renderer.tsx',
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/index.html',
+      template: './src/client/index.html',
       minify: !isDev,
       inject: 'body',
       filename: 'index.html',
