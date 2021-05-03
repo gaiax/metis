@@ -1,7 +1,5 @@
 import marked from 'marked'
 import highlightjs from 'highlightjs'
-import jq from 'jquery'
-import { JSDOM } from 'jsdom'
 marked.setOptions({
   highlight: function (code) {
     return highlightjs.highlightAuto(code).value
@@ -14,9 +12,6 @@ export const generateHtml: generateHtmlType = (md: string) => {
     '<link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/default.min.css"><script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script><main>'
   html += marked(md)
   html += '</main>'
-  const dom = new JSDOM(html)
-  const $: JQueryStatic = jq(dom.window)
-  console.log($('main').height)
   return html
 }
 const formatMD = (md: string) => {
