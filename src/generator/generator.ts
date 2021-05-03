@@ -30,7 +30,7 @@ const formatMD = (md: string) => {
   }
   md = ''
   mds.forEach((m) => {
-    md += m
+    md = md + m + '\n'
   })
   return md
 }
