@@ -10,8 +10,13 @@ marked.setOptions({
 
 export const generateHtml: generateHtmlType = (md: string) => {
   md = formatMD(md)
-  const html = marked(md)
-  //あとでここに分割したり、いろいろ書く！
+  let html =
+    '<link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/default.min.css"><script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script><main>'
+  html += marked(md)
+  html += '</main>'
+  const dom = new JSDOM(html)
+  const $: JQueryStatic = jq(dom.window)
+  console.log($('main').height)
   return html
 }
 const formatMD = (md: string) => {
