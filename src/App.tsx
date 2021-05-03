@@ -8,8 +8,11 @@ import './App.global.css'
 import { ipcRenderer } from 'electron'
 
 const Hello = () => {
-  ipcRenderer.on('hoge', (_event, _arg) => {
+  ipcRenderer.on('hoge', async (_event, _arg) => {
     alert('message')
+    const retval = await ipcRenderer.invoke('file-save', {
+      text: 'hello',
+    })
   })
 
   return (

@@ -11,10 +11,11 @@
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 import path from 'path'
-import { app, BrowserWindow, shell } from 'electron'
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
 import MenuBuilder from './menu'
+import { writeFileSync } from 'fs'
 
 export default class AppUpdater {
   constructor() {
@@ -24,7 +25,7 @@ export default class AppUpdater {
   }
 }
 
-let mainWindow: BrowserWindow | null = null
+let mainWindow: BrowserWindow
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support')
@@ -93,9 +94,7 @@ const createWindow = async () => {
     }
   })
 
-  mainWindow.on('closed', () => {
-    mainWindow = null
-  })
+  mainWindow.on('closed', () => {})
 
   const menuBuilder = new MenuBuilder(mainWindow)
   menuBuilder.buildMenu()
@@ -129,4 +128,36 @@ app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) createWindow()
+})
+
+/**
+ * [IPC] 指定ファイルを保存する
+ *
+ */
+ipcMain.handle('file-save', async (event, data) => {
+  console.log(data)
+  // 場所とファイル名を選択
+  const path = dialog.showSaveDialogSync(mainWindow, {
+    buttonLabel: '保存', // ボタンのラベル
+    filters: [{ name: 'Text', extensions: ['txt', 'text'] }],
+    properties: [
+      'createDirectory', // ディレクトリの作成を許可 (macOS)
+    ],
+  })
+  // キャンセルで閉じた場合
+  if (path === undefined) {
+    return { status: undefined }
+  }
+
+  // ファイルの内容を返却
+  try {
+    writeFileSync(path, data.text)
+
+    return {
+      status: true,
+      path: path,
+    }
+  } catch (error) {
+    return { status: false, message: error.message }
+  }
 })
