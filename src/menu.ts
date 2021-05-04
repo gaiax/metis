@@ -8,6 +8,8 @@ import {
 } from 'electron'
 import { readFileSync } from 'fs'
 
+import { openSubWindow } from './main.dev'
+
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string
   submenu?: DarwinMenuItemConstructorOptions[] | Menu
@@ -127,6 +129,13 @@ export default class MenuBuilder {
           accelerator: 'Command+Shift+S',
           click: (_menuItem, browserWindow) => {
             browserWindow?.webContents.send('start-file-save-as')
+          },
+        },
+        {
+          label: 'Config',
+          accelerator: 'Command+,',
+          click: (_menuItem, browserWindow) => {
+            openSubWindow()
           },
         },
       ],
@@ -289,6 +298,13 @@ export default class MenuBuilder {
             accelerator: 'Ctrl+S',
             click: (_menuItem, browserWindow) => {
               browserWindow?.webContents.send('start-file-save')
+            },
+          },
+          {
+            label: '&Config',
+            accelerator: 'Ctrl+,',
+            click: () => {
+              openSubWindow()
             },
           },
           {
