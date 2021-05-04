@@ -4,7 +4,9 @@ import {
   shell,
   BrowserWindow,
   MenuItemConstructorOptions,
+  dialog,
 } from 'electron'
+import { readFileSync } from 'fs'
 
 import { openSubWindow } from './main.dev'
 
@@ -90,10 +92,43 @@ export default class MenuBuilder {
       label: 'File',
       submenu: [
         {
+          label: 'Open',
+          accelerator: 'Command+O',
+          click: (_menuItem, browserWindow) => {
+            // 場所とファイル名を選択
+            const paths = dialog.showOpenDialogSync(this.mainWindow, {
+              buttonLabel: '開く', // ボタンのラベル
+              // filters: [{ name: 'Text', extensions: ['txt', 'text'] }],
+              properties: ['openFile', 'createDirectory'],
+            })
+            // キャンセルで閉じた場合
+            if (paths === undefined) {
+              return
+            }
+
+            // ファイルの内容を返却
+            try {
+              const path = paths[0]
+              const value = readFileSync(path)
+              browserWindow?.webContents.send('file-open', value.toString())
+              browserWindow?.webContents.send('set-filename', path)
+            } catch (error) {
+              console.error(error)
+            }
+          },
+        },
+        {
           label: 'Save',
           accelerator: 'Command+S',
           click: (_menuItem, browserWindow) => {
             browserWindow?.webContents.send('start-file-save')
+          },
+        },
+        {
+          label: 'Save As',
+          accelerator: 'Command+Shift+S',
+          click: (_menuItem, browserWindow) => {
+            browserWindow?.webContents.send('start-file-save-as')
           },
         },
       ],
@@ -221,6 +256,28 @@ export default class MenuBuilder {
           {
             label: '&Open',
             accelerator: 'Ctrl+O',
+            click: (_menuItem, browserWindow) => {
+              // 場所とファイル名を選択
+              const paths = dialog.showOpenDialogSync(this.mainWindow, {
+                buttonLabel: '開く', // ボタンのラベル
+                // filters: [{ name: 'Text', extensions: ['txt', 'text'] }],
+                properties: ['openFile', 'createDirectory'],
+              })
+              // キャンセルで閉じた場合
+              if (paths === undefined) {
+                return
+              }
+
+              // ファイルの内容を返却
+              try {
+                const path = paths[0]
+                const value = readFileSync(path)
+                browserWindow?.webContents.send('file-open', value.toString())
+                browserWindow?.webContents.send('set-filename', path)
+              } catch (error) {
+                console.error(error)
+              }
+            },
           },
           {
             label: '&Close',
@@ -231,7 +288,7 @@ export default class MenuBuilder {
           },
           {
             label: '&Save',
-            accelerator: 'Ctrl+s',
+            accelerator: 'Ctrl+S',
             click: (_menuItem, browserWindow) => {
               browserWindow?.webContents.send('start-file-save')
             },
@@ -241,6 +298,13 @@ export default class MenuBuilder {
             accelerator: 'Ctrl+,',
             click: () => {
               openSubWindow()
+            },
+          },
+          {
+            label: '&Save As',
+            accelerator: 'Ctrl+Shift+S',
+            click: (_menuItem, browserWindow) => {
+              browserWindow?.webContents.send('start-file-save-as')
             },
           },
         ],
