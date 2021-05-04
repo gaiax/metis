@@ -14,6 +14,8 @@ import 'codemirror/addon/hint/javascript-hint'
 import createValidator from 'codemirror-textlint'
 // @ts-ignore
 import noTodo from 'textlint-rule-no-todo'
+// @ts-ignore
+import rulePrh from 'textlint-rule-prh'
 
 const Hello = () => {
   const [filename, setFilename] = useState<string | null>(null)
@@ -68,6 +70,10 @@ const Hello = () => {
   const validator = createValidator({
     rules: {
       'no-todo': noTodo,
+      prh: rulePrh,
+    },
+    rulesConfig: {
+      prh: { rulePaths: ['./prh-rules/WEB+DB_PRESS.yml'] },
     },
   })
 
