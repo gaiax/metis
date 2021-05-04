@@ -234,7 +234,15 @@ ipcMain.handle('file-save', async (event, data) => {
 })
 
 ipcMain.handle('export-pdf', async (event, data) => {
-  exportPdf(data.text)
+  const path: string | undefined = dialog.showSaveDialogSync(mainWindow, {
+    defaultPath: 'output.pdf',
+    buttonLabel: '書き出し', // ボタンのラベル
+    filters: [{ name: 'Markdown files', extensions: ['pdf'] }],
+    properties: [
+      'createDirectory', // ディレクトリの作成を許可 (macOS)
+    ],
+  })
+  exportPdf(data.text, path)
 })
 
 export const openSubWindow = () => {

@@ -88,7 +88,7 @@ export const generateImprintHtml = () => {
   return generateHtml
 }
 
-export const exportPdf = (md: string) => {
+export const exportPdf = (md: string, path: string) => {
   const generateHtmlOption: generateHtmlOptionType = {
     marginTop: 10,
     marginRightLeft: 10,
@@ -97,7 +97,7 @@ export const exportPdf = (md: string) => {
   }
   const options = { format: 'B5' }
   const html = generateHtml(md, generateHtmlOption) + generateImprintHtml()
-  pdf.create(html, options).toFile('./businesscard.pdf', function (err, res) {
+  pdf.create(html, options).toFile(path, function (err, res) {
     if (err) return console.log(err)
     console.log(res) // { filename: '/app/businesscard.pdf' }
   })
