@@ -1,7 +1,4 @@
-import { generateHtml, checkSpecialLine } from '../generator/generator'
-test('specialLine # test => true', () => {
-  expect(checkSpecialLine('# test')).toBe(true)
-})
+import { generateHtml } from '../generator/generator'
 
 const md = '# test\n\
 testtest  \n\

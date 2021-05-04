@@ -1,13 +1,24 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React, { useEffect, useState } from 'react'
 import { Switch, Route, HashRouter } from 'react-router-dom'
-import 'codemirror/theme/material.css'
 import { UnControlled as CodeMirror } from 'react-codemirror2'
-import 'codemirror/mode/markdown/markdown'
-import 'codemirror/mode/javascript/javascript'
 import './App.global.css'
 import { ipcRenderer } from 'electron'
 import { ConfigSchema } from './types/ConfigSchema'
 import { Button, Card, CardContent, TextField } from '@material-ui/core'
+import { MarkdownPreview } from './component/MarkdownPreview'
+import 'codemirror/mode/markdown/markdown'
+import 'codemirror/mode/javascript/javascript'
+import 'codemirror/addon/lint/javascript-lint'
+import 'codemirror/addon/lint/lint'
+import 'codemirror/addon/hint/javascript-hint'
+
+// @ts-ignore
+import createValidator from 'codemirror-textlint'
+// @ts-ignore
+import noTodo from 'textlint-rule-no-todo'
+// @ts-ignore
+import rulePrh from 'textlint-rule-prh'
 
 const Hello = () => {
   const [filename, setFilename] = useState<string | null>(null)
@@ -58,19 +69,43 @@ const Hello = () => {
   ipcRenderer.on('set-filename', async (_event, filename) => {
     setFilename(filename)
   })
-
+  const halfStyle = {
+    width: '50%',
+  }
+  const validator = createValidator({
+    rules: {
+      'no-todo': noTodo,
+      prh: rulePrh,
+    },
+    rulesConfig: {
+      prh: { rulePaths: ['./prh-rules/WEB+DB_PRESS.yml'] },
+    },
+  })
   return (
-    <CodeMirror
-      value={initialValue}
-      options={{
-        mode: 'markdown',
-        theme: 'material',
-        lineNumbers: true,
-      }}
-      onChange={(_editor, _data, newValue) => {
-        setValue(newValue)
-      }}
-    />
+    <div style={{ display: 'flex' }}>
+      <div style={halfStyle}>
+        <CodeMirror
+          value={initialValue}
+          options={{
+            mode: 'markdown',
+            theme: 'material',
+            gutters: ['CodeMirror-lint-markers'],
+            lineNumbers: true,
+            lint: {
+              getAnnotations: validator,
+              async: true,
+            },
+          }}
+          onChange={(_editor, _data, newValue) => {
+            setValue(newValue)
+          }}
+        />
+      </div>
+
+      <div style={halfStyle}>
+        <MarkdownPreview md={value} />
+      </div>
+    </div>
   )
 }
 
