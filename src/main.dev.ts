@@ -138,7 +138,7 @@ const setConfigStoreDeafults = () => {
     'frontCover',
     'isdn',
     'printShop',
-    'publishedAt',
+    'publishDate',
     'publisher',
     'title',
     'version',
@@ -163,10 +163,10 @@ ipcMain.handle('set-config', (_, data: ConfigSchema) => {
   }
 })
 
-ipcMain.handle('request-config', (event) => {
+const createConfigObject = () => {
   const config: ConfigSchema = {
     title: store.get('title'),
-    publishedAt: store.get('publishedAt'),
+    publishDate: store.get('publishDate'),
     publisher: store.get('publisher'),
     author: store.get('author'),
     contact: store.get('contact'),
@@ -176,7 +176,54 @@ ipcMain.handle('request-config', (event) => {
     backCover: store.get('backCover'),
     isdn: store.get('isdn'),
   }
-  event.sender.send('update-config', config)
+
+  return config
+}
+
+ipcMain.handle('request-config', (event) => {
+  event.sender.send('update-config', createConfigObject())
+})
+
+ipcMain.handle('request-update-front-cover', (event) => {
+  if (!subWindow) {
+    return
+  }
+
+  const path = dialog.showOpenDialogSync(subWindow, {
+    defaultPath: store.get('frontCover') || '.',
+    buttonLabel: '開く',
+    filters: [{ name: 'Image files', extensions: ['png', 'jpg', 'gif'] }],
+    properties: ['openFile'],
+  })
+
+  if (!path) {
+    return { status: undefined }
+  }
+
+  store.set('frontCover', path[0])
+
+  event.sender.send('update-config', createConfigObject())
+})
+
+ipcMain.handle('request-update-back-cover', (event) => {
+  if (!subWindow) {
+    return
+  }
+
+  const path = dialog.showOpenDialogSync(subWindow, {
+    defaultPath: store.get('backCover') || '.',
+    buttonLabel: '開く',
+    filters: [{ name: 'Image files', extensions: ['png', 'jpg', 'gif'] }],
+    properties: ['openFile'],
+  })
+
+  if (!path) {
+    return { status: undefined }
+  }
+
+  store.set('backCover', path[0])
+
+  event.sender.send('update-config', createConfigObject())
 })
 
 /**
@@ -232,13 +279,21 @@ ipcMain.handle('file-save', async (event, data) => {
   }
 })
 
+let subWindow: BrowserWindow | undefined
 export const openSubWindow = () => {
+  if (typeof subWindow !== 'undefined') {
+    subWindow.focus()
+    return
+  }
+
   setConfigStoreDeafults()
-  const subWindow = new BrowserWindow({
+
+  subWindow = new BrowserWindow({
     parent: mainWindow,
     webPreferences: {
       nodeIntegration: true,
     },
   })
   subWindow.loadURL(`file://${__dirname}/index.html#/config`)
+  subWindow.on('closed', () => (subWindow = undefined))
 }
