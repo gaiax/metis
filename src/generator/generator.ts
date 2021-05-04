@@ -39,9 +39,9 @@ const generatePrintPageStyle = (option: generateHtmlOptionType) => {
     padding: <%= mt %>mm <%= mrl %>mm <%= mb %>mm <%= mrl %>mm;\n\
     width: 182mm;\n\
     height: 257mm;\n\
-    page-break-after: always;\n\
   }\n\
   </style>\n'
+  //page-break-after: always;\n\
   return ejs.render(styleTemp, {
     mt: option.marginTop,
     mrl: option.marginRightLeft,
@@ -114,7 +114,7 @@ export const exportPdf = (md: string, path: string) => {
     marginBottom: 10,
     contents: [],
   }
-  const options = { format: 'B5' }
+  const options: CreateOptions = { height: '257mm', width: '182mm' }
   const html =
     generateHtml(md, generateHtmlOption, true) + generateImprintHtml()
   pdf.create(html, options).toFile(path, function (err, res) {
