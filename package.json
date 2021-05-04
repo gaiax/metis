@@ -1,6 +1,6 @@
 {
-  "name": "electron-react-boilerplate",
-  "productName": "ElectronReact",
+  "name": "metis",
+  "productName": "Metis",
   "description": "Electron application boilerplate based on React, React Router, Webpack, React Fast Refresh for rapid application development",
   "scripts": {
     "build": "concurrently \"yarn build:main\" \"yarn build:renderer\"",
@@ -30,8 +30,8 @@
     ]
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "Metis",
+    "appId": "org.erb.Metis",
     "files": [
       "dist/",
       "node_modules/",
@@ -86,18 +86,18 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
+      "owner": "metis",
+      "repo": "metis"
     }
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron-react-boilerplate/electron-react-boilerplate.git"
+    "url": "git+https://github.com/metis/metis.git"
   },
   "author": {
     "name": "Electron React Boilerplate Maintainers",
     "email": "electronreactboilerplate@gmail.com",
-    "url": "https://electron-react-boilerplate.js.org"
+    "url": "https://metis.js.org"
   },
   "contributors": [
     {
@@ -113,7 +113,7 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues"
+    "url": "https://github.com/metis/metis/issues"
   },
   "keywords": [
     "electron",
@@ -126,7 +126,7 @@
     "hot",
     "reload"
   ],
-  "homepage": "https://github.com/electron-react-boilerplate/electron-react-boilerplate#readme",
+  "homepage": "https://github.com/metis/metis#readme",
   "jest": {
     "testURL": "http://localhost/",
     "moduleNameMapper": {
@@ -252,9 +252,12 @@
     "yarn-deduplicate": "^3.1.0"
   },
   "dependencies": {
+    "@material-ui/core": "^4.11.4",
+    "@material-ui/icons": "^4.11.2",
     "codemirror": "^5.61.0",
     "electron-debug": "^3.1.0",
     "electron-log": "^4.2.4",
+    "electron-store": "^8.0.0",
     "electron-updater": "^4.3.4",
     "highlightjs": "^9.16.2",
     "history": "^5.0.0",
@@ -272,7 +275,7 @@
     "yarn": ">=1.21.3"
   },
   "collective": {
-    "url": "https://opencollective.com/electron-react-boilerplate-594"
+    "url": "https://opencollective.com/metis-594"
   },
   "browserslist": [],
   "prettier": {
