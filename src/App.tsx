@@ -1,12 +1,22 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React, { useEffect, useState } from 'react'
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
-import 'codemirror/theme/material.css'
+import { Switch, Route, HashRouter } from 'react-router-dom'
 import { UnControlled as CodeMirror } from 'react-codemirror2'
-import 'codemirror/mode/markdown/markdown'
-import 'codemirror/mode/javascript/javascript'
 import './App.global.css'
 import { ipcRenderer } from 'electron'
 import { MarkdownPreview } from './component/MarkdownPreview'
+import 'codemirror/mode/markdown/markdown'
+import 'codemirror/mode/javascript/javascript'
+import 'codemirror/addon/lint/javascript-lint'
+import 'codemirror/addon/lint/lint'
+import 'codemirror/addon/hint/javascript-hint'
+
+// @ts-ignore
+import createValidator from 'codemirror-textlint'
+// @ts-ignore
+import noTodo from 'textlint-rule-no-todo'
+// @ts-ignore
+import rulePrh from 'textlint-rule-prh'
 
 const Hello = () => {
   const [filename, setFilename] = useState<string | null>(null)
@@ -60,6 +70,15 @@ const Hello = () => {
   const halfStyle = {
     width: '50%',
   }
+  const validator = createValidator({
+    rules: {
+      'no-todo': noTodo,
+      prh: rulePrh,
+    },
+    rulesConfig: {
+      prh: { rulePaths: ['./prh-rules/WEB+DB_PRESS.yml'] },
+    },
+  })
   return (
     <div style={{ display: 'flex' }}>
       <div style={halfStyle}>
@@ -68,7 +87,12 @@ const Hello = () => {
           options={{
             mode: 'markdown',
             theme: 'material',
+            gutters: ['CodeMirror-lint-markers'],
             lineNumbers: true,
+            lint: {
+              getAnnotations: validator,
+              async: true,
+            },
           }}
           onChange={(_editor, _data, newValue) => {
             setValue(newValue)
@@ -83,12 +107,24 @@ const Hello = () => {
   )
 }
 
+const ConfigForm = () => {
+  const [name, setName] = useState('John')
+
+  return (
+    <div>
+      <h1>Hello, {name}</h1>
+      <input value={name} onChange={(event) => setName(event.target.value)} />
+    </div>
+  )
+}
+
 export default function App(): React.ReactElement {
   return (
-    <Router>
+    <HashRouter>
       <Switch>
+        <Route path="/config" component={ConfigForm} />
         <Route path="/" component={Hello} />
       </Switch>
-    </Router>
+    </HashRouter>
   )
 }

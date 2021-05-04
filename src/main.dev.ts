@@ -184,3 +184,21 @@ ipcMain.handle('file-save', async (event, data) => {
     return { status: false, message: error.message }
   }
 })
+
+import Store from 'electron-store'
+
+const store = new Store()
+store.set('key', 'value')
+
+export const openSubWindow = () => {
+  console.log('run')
+  console.log(store.get('key'))
+
+  const subWindow = new BrowserWindow({
+    parent: mainWindow,
+    webPreferences: {
+      nodeIntegration: true,
+    },
+  })
+  subWindow.loadURL(`file://${__dirname}/index.html#/config`)
+}
