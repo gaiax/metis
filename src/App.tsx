@@ -1,11 +1,19 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React, { useEffect, useState } from 'react'
 import { Switch, Route, HashRouter } from 'react-router-dom'
-import 'codemirror/theme/material.css'
 import { UnControlled as CodeMirror } from 'react-codemirror2'
-import 'codemirror/mode/markdown/markdown'
-import 'codemirror/mode/javascript/javascript'
 import './App.global.css'
 import { ipcRenderer } from 'electron'
+import 'codemirror/mode/markdown/markdown'
+import 'codemirror/mode/javascript/javascript'
+import 'codemirror/addon/lint/javascript-lint'
+import 'codemirror/addon/lint/lint'
+import 'codemirror/addon/hint/javascript-hint'
+
+// @ts-ignore
+import createValidator from 'codemirror-textlint'
+// @ts-ignore
+import noTodo from 'textlint-rule-no-todo'
 
 const Hello = () => {
   const [filename, setFilename] = useState<string | null>(null)
@@ -57,13 +65,24 @@ const Hello = () => {
     setFilename(filename)
   })
 
+  const validator = createValidator({
+    rules: {
+      'no-todo': noTodo,
+    },
+  })
+
   return (
     <CodeMirror
       value={initialValue}
       options={{
         mode: 'markdown',
         theme: 'material',
+        gutters: ['CodeMirror-lint-markers'],
         lineNumbers: true,
+        lint: {
+          getAnnotations: validator,
+          async: true,
+        },
       }}
       onChange={(_editor, _data, newValue) => {
         setValue(newValue)
