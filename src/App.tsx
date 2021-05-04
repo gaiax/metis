@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import 'date-fns'
+import DateFnsUtils from '@date-io/date-fns'
 import React, { useEffect, useState } from 'react'
 import { Switch, Route, HashRouter } from 'react-router-dom'
 import { UnControlled as CodeMirror } from 'react-codemirror2'
@@ -19,6 +21,10 @@ import createValidator from 'codemirror-textlint'
 import noTodo from 'textlint-rule-no-todo'
 // @ts-ignore
 import rulePrh from 'textlint-rule-prh'
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers'
 
 const Hello = () => {
   const [filename, setFilename] = useState<string | null>(null)
@@ -119,9 +125,9 @@ const Hello = () => {
 }
 
 const ConfigForm = () => {
-  const [loading, setLoading] = useState(true)
   const [config, setConfig] = useState<ConfigSchema>()
 
+  const [publishDate, setPublishDate] = useState<Date | null>(new Date())
   const [keys] = useState<(keyof ConfigSchema)[]>([
     'author',
     'backCover',
@@ -129,7 +135,7 @@ const ConfigForm = () => {
     'frontCover',
     'isdn',
     'printShop',
-    'publishedAt',
+    'publishDate',
     'publisher',
     'title',
     'version',
@@ -151,10 +157,24 @@ const ConfigForm = () => {
     })
   }
 
+  const requestUpdateFrontCover = () => {
+    ipcRenderer.invoke('request-update-front-cover')
+  }
+
+  const requestUpdateBackCover = () => {
+    ipcRenderer.invoke('request-update-back-cover')
+  }
+
+  useEffect(() => {
+    setItem('publishDate', publishDate?.toISOString() ?? '')
+  }, [publishDate])
+
   useEffect(() => {
     const onUpdateConfig = async (_, config: ConfigSchema) => {
-      setLoading(false)
       setConfig(config)
+      if (config.publishDate !== '') {
+        setPublishDate(new Date(config.publishDate))
+      }
     }
 
     ipcRenderer.on('update-config', onUpdateConfig)
@@ -171,27 +191,107 @@ const ConfigForm = () => {
   }
 
   return (
-    <>
+    <div className="config-container">
       <h1>Preference</h1>
       {!config ? (
         <div>Loading...</div>
       ) : (
         <Card>
           <CardContent>
-            {keys.map((key) => (
+            <div className="config-item">
               <TextField
-                key={key}
-                label={key}
-                value={config[key]}
-                onChange={({ target: { value } }) => setItem(key, value)}
+                label="Title"
+                value={config.title}
+                onChange={({ target: { value } }) => setItem('title', value)}
+                fullWidth
                 variant="outlined"
               />
-            ))}
-            <Button onClick={save}>save</Button>
+            </div>
+            <div className="config-item">
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardDatePicker
+                  disableToolbar
+                  variant="inline"
+                  margin="normal"
+                  label="Publish date"
+                  value={publishDate}
+                  onChange={(date) => setPublishDate(date)}
+                  fullWidth
+                />
+              </MuiPickersUtilsProvider>
+            </div>
+            <div className="config-item">
+              <TextField
+                label="Author"
+                value={config.author}
+                onChange={({ target: { value } }) => setItem('author', value)}
+                fullWidth
+                variant="outlined"
+              />
+            </div>
+            <div className="config-item">
+              <TextField
+                label="Contact"
+                value={config.contact}
+                onChange={({ target: { value } }) => setItem('contact', value)}
+                fullWidth
+                variant="outlined"
+              />
+            </div>
+            <div className="config-item">
+              <TextField
+                label="Print shop"
+                value={config.printShop}
+                onChange={({ target: { value } }) =>
+                  setItem('printShop', value)
+                }
+                fullWidth
+                variant="outlined"
+              />
+            </div>
+            <div className="config-item">
+              <TextField
+                label="Version"
+                value={config.version}
+                onChange={({ target: { value } }) => setItem('version', value)}
+                fullWidth
+                variant="outlined"
+              />
+            </div>
+            <div className="config-item">
+              <TextField
+                label="ISDN"
+                value={config.isdn}
+                onChange={({ target: { value } }) => setItem('isdn', value)}
+                fullWidth
+                variant="outlined"
+              />
+            </div>
+            <Button onClick={save} color="primary" variant="contained">
+              save
+            </Button>
+            <div className="config-item">
+              <label htmlFor="front-cover">Front cover image</label>
+              <img
+                id="front-cover"
+                className="cover-image"
+                src={config.frontCover}
+                onClick={requestUpdateFrontCover}
+              />
+            </div>
+            <div className="config-item">
+              <label htmlFor="back-cover">Back cover image</label>
+              <img
+                id="back-cover"
+                className="cover-image"
+                src={config.backCover}
+                onClick={requestUpdateBackCover}
+              />
+            </div>
           </CardContent>
         </Card>
       )}
-    </>
+    </div>
   )
 }
 

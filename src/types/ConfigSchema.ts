@@ -3,7 +3,7 @@
  */
 export type ConfigSchema = {
   title: string
-  publishedAt: string
+  publishDate: string
   publisher: string
   author: string
   contact: string

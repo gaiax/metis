@@ -16,7 +16,8 @@ body {
 
 body {
   position: relative;
-  color: white;
+  background: white;
+  color: #202020;
   width: 100%;
   height: 100vh;
   font-family: sans-serif;
@@ -41,12 +42,30 @@ body {
 
 .react-codemirror2 {
   height: 100%;
+  overflow-y: scroll;
 }
 
 .CodeMirror {
   width: 100%;
   height: 100%;
   font-size: 1rem;
+}
+
+.config-container {
+  padding: 16px;
+}
+
+.config-item {
+  margin: 16px 0;
+}
+
+.cover-image {
+  display: block;
+  width: 200px;
+  height: auto;
+  min-height: 100px;
+  background: #202020;
+  cursor: pointer;
 }
 
 /*
