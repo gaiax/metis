@@ -1,7 +1,7 @@
 import marked from 'marked'
 import highlightjs from 'highlightjs'
 import ejs from 'ejs'
-import pdf from 'html-pdf'
+import pdf, { CreateOptions } from 'html-pdf'
 import Store from 'electron-store'
 import { ConfigSchema } from '../types/ConfigSchema'
 
@@ -119,6 +119,6 @@ export const exportPdf = (md: string, path: string) => {
     generateHtml(md, generateHtmlOption, true) + generateImprintHtml()
   pdf.create(html, options).toFile(path, function (err, res) {
     if (err) return console.log(err)
-    console.log(res) // { filename: '/app/businesscard.pdf' }
+    console.log(res)
   })
 }
