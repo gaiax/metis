@@ -1,5 +1,6 @@
 import marked from 'marked'
 import highlightjs from 'highlightjs'
+import ejs from 'ejs'
 marked.setOptions({
   highlight: function (code) {
     return highlightjs.highlightAuto(code).value
@@ -14,15 +15,33 @@ export const generateHtml: generateHtmlType = (
   const mds = md.split('---')
   let html =
     '<link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/default.min.css"><script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script>\n'
-
+  html += generatePageStyle(option)
   mds.forEach((m) => {
     html += '<div class="page">\n'
     html += marked(m)
     html += '\n</div>\n'
   })
+  console.log(html)
   return html
 }
-//const generatePageStyle = (option: generateHtmlOptionType) => {}
+const generatePageStyle = (option: generateHtmlOptionType) => {
+  const styleTemp =
+    '\
+  <style>\n\
+  .page{\n\
+    padding: <%= mt %> <%= mrl %> <%= mb %> <%= mrl %>;\n\
+    border: solid;\n\
+    border-color: black;\n\
+    width: 172mm;\n\
+    height: 251mm;\n\
+  }\n\
+  </style>\n'
+  return ejs.render(styleTemp, {
+    mt: option.marginTop,
+    mrl: option.marginRightLeft,
+    mb: option.marginBottom,
+  })
+}
 const formatMD = (md: string) => {
   //無駄な行を前行に統合
   md = md.replace('\r', '')
