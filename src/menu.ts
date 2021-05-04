@@ -132,6 +132,13 @@ export default class MenuBuilder {
           },
         },
         {
+          label: 'Export  PDF',
+          accelerator: 'Command+e',
+          click: (_menuItem, browserWindow) => {
+            browserWindow?.webContents.send('start-export-pdf')
+          },
+        },
+        {
           label: 'Config',
           accelerator: 'Command+,',
           click: (_menuItem, browserWindow) => {
