@@ -59,6 +59,7 @@ const installExtensions = async () => {
 }
 
 const createWindow = async () => {
+  setConfigStoreDeafults()
   if (
     process.env.NODE_ENV === 'development' ||
     process.env.DEBUG_PROD === 'true'
@@ -143,11 +144,16 @@ const setConfigStoreDeafults = () => {
     'publisher',
     'title',
     'version',
+    'keymap',
   ]
 
   for (const key of keys) {
     if (typeof store.get(key) === 'undefined') {
-      store.set(key, '')
+      if (key === 'keymap') {
+        store.set(key, 'default')
+      } else {
+        store.set(key, '')
+      }
     }
   }
 }
@@ -162,6 +168,8 @@ ipcMain.handle('set-config', (_, data: ConfigSchema) => {
   for (const [key, value] of Object.entries(data)) {
     store.set(key, value)
   }
+  ipcMain.emit('update-config', createConfigObject())
+  console.log('update', data)
 })
 
 const createConfigObject = () => {
@@ -176,6 +184,7 @@ const createConfigObject = () => {
     frontCover: store.get('frontCover'),
     backCover: store.get('backCover'),
     isdn: store.get('isdn'),
+    keymap: store.get('keymap'),
   }
 
   return config
@@ -310,8 +319,6 @@ export const openSubWindow = () => {
     subWindow.focus()
     return
   }
-
-  setConfigStoreDeafults()
 
   subWindow = new BrowserWindow({
     parent: mainWindow,

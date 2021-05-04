@@ -7,13 +7,22 @@ import { UnControlled as CodeMirror } from 'react-codemirror2'
 import './App.global.css'
 import { ipcRenderer } from 'electron'
 import { ConfigSchema } from './types/ConfigSchema'
-import { Button, Card, CardContent, TextField } from '@material-ui/core'
+import {
+  Button,
+  Card,
+  CardContent,
+  Select,
+  TextField,
+  MenuItem,
+} from '@material-ui/core'
 import { MarkdownPreview } from './component/MarkdownPreview'
 import 'codemirror/mode/markdown/markdown'
 import 'codemirror/mode/javascript/javascript'
 import 'codemirror/addon/lint/javascript-lint'
 import 'codemirror/addon/lint/lint'
 import 'codemirror/addon/hint/javascript-hint'
+import 'codemirror/keymap/vim'
+import 'codemirror/keymap/emacs'
 
 // @ts-ignore
 import createValidator from 'codemirror-textlint'
@@ -28,10 +37,27 @@ import {
 
 const Hello = () => {
   const [filename, setFilename] = useState<string | null>(null)
+  const [config, setConfig] = useState<ConfigSchema>()
   const [initialValue, setInitialValue] = useState(
     '<h1>I ♥ react-codemirror2</h1>'
   )
   const [value, setValue] = useState(initialValue)
+
+  useEffect(() => {
+    const onUpdateConfig = async (_, config: ConfigSchema) => {
+      console.log(config)
+      setConfig(config)
+    }
+
+    ipcRenderer.on('update-config', onUpdateConfig)
+
+    ipcRenderer.invoke('request-config')
+
+    return () => {
+      ipcRenderer.removeListener('update-config', onUpdateConfig)
+      console.log('unregistered')
+    }
+  }, [])
 
   useEffect(() => {
     const onStartFileSave = async () => {
@@ -104,6 +130,7 @@ const Hello = () => {
           options={{
             mode: 'markdown',
             theme: 'material',
+            keyMap: config ? config.keymap : 'default',
             gutters: ['CodeMirror-lint-markers'],
             lineNumbers: true,
             lint: {
@@ -266,6 +293,21 @@ const ConfigForm = () => {
                 fullWidth
                 variant="outlined"
               />
+            </div>
+            <div className="config-item">
+              <Select
+                label="Keymap"
+                value={config.keymap}
+                onChange={({ target: { value } }) =>
+                  setItem('keymap', value as ConfigSchema['keymap'])
+                }
+                fullWidth
+                variant="outlined"
+              >
+                <MenuItem value="default">Default</MenuItem>
+                <MenuItem value="vim">Vim</MenuItem>
+                <MenuItem value="emacs">Emacs</MenuItem>
+              </Select>
             </div>
             <Button onClick={save} color="primary" variant="contained">
               save

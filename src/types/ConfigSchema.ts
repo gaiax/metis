@@ -12,4 +12,5 @@ export type ConfigSchema = {
   frontCover: string
   backCover: string
   isdn: string
+  keymap: 'default' | 'vim' | 'emacs'
 }
