@@ -6,14 +6,23 @@ marked.setOptions({
   },
 })
 
-export const generateHtml: generateHtmlType = (md: string) => {
+export const generateHtml: generateHtmlType = (
+  md: string,
+  option: generateHtmlOptionType
+) => {
   md = formatMD(md)
+  const mds = md.split('---')
   let html =
-    '<link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/default.min.css"><script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script><main>'
-  html += marked(md)
-  html += '</main>'
+    '<link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/default.min.css"><script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script>\n'
+
+  mds.forEach((m) => {
+    html += '<div class="page">\n'
+    html += marked(m)
+    html += '\n</div>\n'
+  })
   return html
 }
+//const generatePageStyle = (option: generateHtmlOptionType) => {}
 const formatMD = (md: string) => {
   //無駄な行を前行に統合
   md = md.replace('\r', '')
@@ -53,5 +62,21 @@ export const checkSpecialLine = (target: string) => {
 }
 
 export type generateHtmlType = {
-  (md: string): string
+  (md: string, option: generateHtmlOptionType): string
+}
+
+export type generateHtmlOptionType = {
+  marginTop: number
+  marginBottom: number
+  marginRightLeft: number
+  contents: content[] | undefined
+}
+export type content = {
+  kind: 'img' | 'text' | 'page-number'
+  position: vector2
+  value: string | undefined
+}
+export type vector2 = {
+  x: number
+  y: number
 }
