@@ -131,6 +131,13 @@ export default class MenuBuilder {
             browserWindow?.webContents.send('start-file-save-as')
           },
         },
+        {
+          label: 'Config',
+          accelerator: 'Command+,',
+          click: (_menuItem, browserWindow) => {
+            openSubWindow()
+          },
+        },
       ],
     }
     const subMenuEdit: DarwinMenuItemConstructorOptions = {
