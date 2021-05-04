@@ -57,21 +57,28 @@ const Hello = () => {
   ipcRenderer.on('set-filename', async (_event, filename) => {
     setFilename(filename)
   })
-
+  const halfStyle = {
+    width: '50%',
+  }
   return (
-    <div>
-      <CodeMirror
-        value={initialValue}
-        options={{
-          mode: 'markdown',
-          theme: 'material',
-          lineNumbers: true,
-        }}
-        onChange={(_editor, _data, newValue) => {
-          setValue(newValue)
-        }}
-      />
-      <MarkdownPreview md={'# test\naaaaa  \nbbbbb'} />
+    <div style={{ display: 'flex' }}>
+      <div style={halfStyle}>
+        <CodeMirror
+          value={initialValue}
+          options={{
+            mode: 'markdown',
+            theme: 'material',
+            lineNumbers: true,
+          }}
+          onChange={(_editor, _data, newValue) => {
+            setValue(newValue)
+          }}
+        />
+      </div>
+
+      <div style={halfStyle}>
+        <MarkdownPreview md={value} />
+      </div>
     </div>
   )
 }

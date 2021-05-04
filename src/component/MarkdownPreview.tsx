@@ -16,7 +16,7 @@ export const MarkdownPreview: React.FC<Props> = (props) => {
     }
     const html = generateHtml(props.md, generateHtmlOption)
     setPreviewHtml(html)
-  }, [])
+  }, [props.md])
   const divRef = useRef()
 
   const [previewHtml, setPreviewHtml] = useState('')
