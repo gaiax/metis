@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint global-require: off, no-console: off */
 
 /**
@@ -11,10 +12,11 @@
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 import path from 'path'
-import { app, BrowserWindow, shell } from 'electron'
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
 import MenuBuilder from './menu'
+import { writeFileSync } from 'fs'
 
 export default class AppUpdater {
   constructor() {
@@ -24,7 +26,7 @@ export default class AppUpdater {
   }
 }
 
-let mainWindow: BrowserWindow | null = null
+let mainWindow: BrowserWindow
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support')
@@ -93,9 +95,8 @@ const createWindow = async () => {
     }
   })
 
-  mainWindow.on('closed', () => {
-    mainWindow = null
-  })
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  mainWindow.on('closed', () => {})
 
   const menuBuilder = new MenuBuilder(mainWindow)
   menuBuilder.buildMenu()
@@ -108,7 +109,7 @@ const createWindow = async () => {
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
-  new AppUpdater();
+  new AppUpdater()
 }
 
 /**
@@ -129,4 +130,57 @@ app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) createWindow()
+})
+
+/**
+ * [IPC] 指定ファイルを保存する
+ */
+ipcMain.handle('file-save-as', async (event, data) => {
+  // 場所とファイル名を選択
+  const path = dialog.showSaveDialogSync(mainWindow, {
+    defaultPath: 'book.md',
+    buttonLabel: '保存', // ボタンのラベル
+    filters: [
+      { name: 'Markdown files', extensions: ['md'] },
+      { name: 'Text files', extensions: ['txt'] },
+    ],
+    properties: [
+      'createDirectory', // ディレクトリの作成を許可 (macOS)
+    ],
+  })
+  // キャンセルで閉じた場合
+  if (path === undefined) {
+    return { status: undefined }
+  }
+
+  // ファイルの内容を返却
+  try {
+    writeFileSync(path, data.text)
+    mainWindow.webContents.send('set-filename', path)
+
+    return {
+      status: true,
+      path: path,
+    }
+  } catch (error) {
+    return { status: false, message: error.message }
+  }
+})
+
+/**
+ * [IPC] 指定ファイルを上書き保存する
+ */
+ipcMain.handle('file-save', async (event, data) => {
+  // ファイルの内容を返却
+  try {
+    writeFileSync(data.path, data.text)
+    mainWindow.webContents.send('set-filename', path)
+
+    return {
+      status: true,
+      path: path,
+    }
+  } catch (error) {
+    return { status: false, message: error.message }
+  }
 })
