@@ -14,7 +14,7 @@ export const generateHtml: generateHtmlType = (
   md = formatMD(md)
   const mds = md.split('---')
   let html =
-    '<link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/default.min.css"><script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script>\n'
+    '<link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/default.min.css">\n'
   html += generatePageStyle(option)
   mds.forEach((m) => {
     html += '<div class="page">\n'

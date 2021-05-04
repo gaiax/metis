@@ -6,6 +6,7 @@ import 'codemirror/mode/markdown/markdown'
 import 'codemirror/mode/javascript/javascript'
 import './App.global.css'
 import { ipcRenderer } from 'electron'
+import { MarkdownPreview } from './component/MarkdownPreview'
 
 const Hello = () => {
   const [filename, setFilename] = useState<string | null>(null)
@@ -58,17 +59,20 @@ const Hello = () => {
   })
 
   return (
-    <CodeMirror
-      value={initialValue}
-      options={{
-        mode: 'markdown',
-        theme: 'material',
-        lineNumbers: true,
-      }}
-      onChange={(_editor, _data, newValue) => {
-        setValue(newValue)
-      }}
-    />
+    <div>
+      <CodeMirror
+        value={initialValue}
+        options={{
+          mode: 'markdown',
+          theme: 'material',
+          lineNumbers: true,
+        }}
+        onChange={(_editor, _data, newValue) => {
+          setValue(newValue)
+        }}
+      />
+      <MarkdownPreview md={'# test\naaaaa  \nbbbbb'} />
+    </div>
   )
 }
 
