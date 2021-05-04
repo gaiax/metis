@@ -1144,6 +1144,18 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
+"@date-io/core@^2.10.7":
+  version "2.10.7"
+  resolved "https://registry.yarnpkg.com/@date-io/core/-/core-2.10.7.tgz#0fe1fa0ef02c827919e23c2802a4b25589ac522d"
+  integrity sha512-EG/1qDiQvd12RoNJ6H+sZcHVswC/3uMx/ySvfaJ24vB30rLjkgHggEXbgMbfgki7wMuiQ/zXI8QlmF1k3kWRGQ==
+
+"@date-io/date-fns@^2.10.8":
+  version "2.10.8"
+  resolved "https://registry.yarnpkg.com/@date-io/date-fns/-/date-fns-2.10.8.tgz#08ab5ed26c6c88095474f9ddd948d65d8a023eb4"
+  integrity sha512-T5RXKOt8CnjsKg0Orgbe/ekoafC02nsopS+wve5+6gF11hPfN2QUqXclxYQv1LIZSaAHJJ2gL8y0msOew74QHQ==
+  dependencies:
+    "@date-io/core" "^2.10.7"
+
 "@develar/schema-utils@~2.6.5":
   version "2.6.5"
   resolved "https://registry.yarnpkg.com/@develar/schema-utils/-/schema-utils-2.6.5.tgz#3ece22c5838402419a6e0425f85742b961d9b6c6"
