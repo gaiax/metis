@@ -21,7 +21,15 @@ export const MarkdownPreview: React.FC<Props> = (props) => {
 
   const [previewHtml, setPreviewHtml] = useState('')
   return (
-    <div className="Preview">
+    <div
+      className="Preview"
+      style={{
+        overflowY: 'scroll',
+        height: '100vh',
+        color: 'black',
+        backgroundColor: 'white',
+      }}
+    >
       <div dangerouslySetInnerHTML={{ __html: previewHtml }}></div>
     </div>
   )
