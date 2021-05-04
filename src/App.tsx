@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+import { Switch, Route, HashRouter } from 'react-router-dom'
 import 'codemirror/theme/material.css'
 import { UnControlled as CodeMirror } from 'react-codemirror2'
 import 'codemirror/mode/markdown/markdown'
@@ -72,13 +72,24 @@ const Hello = () => {
   )
 }
 
+const ConfigForm = () => {
+  const [name, setName] = useState('John')
+
+  return (
+    <div>
+      <h1>Hello, {name}</h1>
+      <input value={name} onChange={(event) => setName(event.target.value)} />
+    </div>
+  )
+}
+
 export default function App(): React.ReactElement {
   return (
-    <Router>
+    <HashRouter>
       <Switch>
+        <Route path="/config" component={ConfigForm} />
         <Route path="/" component={Hello} />
-        <Route path="/config" component={Hello} />
       </Switch>
-    </Router>
+    </HashRouter>
   )
 }
