@@ -1,6 +1,12 @@
 import marked from 'marked'
 import highlightjs from 'highlightjs'
 import ejs from 'ejs'
+import pdf from 'html-pdf'
+import Store from 'electron-store'
+import { ConfigSchema } from '../types/ConfigSchema'
+
+const store = new Store<ConfigSchema>()
+
 marked.setOptions({
   highlight: function (code) {
     return highlightjs.highlightAuto(code).value
@@ -60,4 +66,39 @@ export type content = {
 export type vector2 = {
   x: number
   y: number
+}
+
+export const generateImprintHtml = () => {
+  const keys: Array<[string, string]> = [
+    ['author', '著者'],
+    ['contact', '連絡先'],
+    ['isdn', 'ISDN'],
+    ['printShop', '印刷所'],
+    ['publishedAt', '発行日'],
+    ['publisher', '発行元'],
+    ['title', 'タイトル'],
+    ['version', '版'],
+  ]
+  let generateHtml = ''
+
+  for (const key of keys) {
+    generateHtml += `<p>${key[1]}: ${store.get(key[0])} </p>\n`
+  }
+
+  return generateHtml
+}
+
+export const exportPdf = (md: string) => {
+  const generateHtmlOption: generateHtmlOptionType = {
+    marginTop: 10,
+    marginRightLeft: 10,
+    marginBottom: 10,
+    contents: [],
+  }
+  const options = { format: 'B5' }
+  const html = generateHtml(md, generateHtmlOption) + generateImprintHtml()
+  pdf.create(html, options).toFile('./businesscard.pdf', function (err, res) {
+    if (err) return console.log(err)
+    console.log(res) // { filename: '/app/businesscard.pdf' }
+  })
 }

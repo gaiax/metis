@@ -262,6 +262,7 @@
     "electron-updater": "^4.3.4",
     "highlightjs": "^9.16.2",
     "history": "^5.0.0",
+    "html-pdf": "^3.0.0",
     "marked": "^2.0.3",
     "react": "^17.0.1",
     "react-codemirror2": "^7.2.1",

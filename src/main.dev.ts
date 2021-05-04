@@ -19,6 +19,7 @@ import MenuBuilder from './menu'
 import { writeFileSync } from 'fs'
 import Store from 'electron-store'
 import { ConfigSchema } from './types/ConfigSchema'
+import { exportPdf } from './generator/generator'
 
 const store = new Store<ConfigSchema>()
 
@@ -220,7 +221,7 @@ ipcMain.handle('file-save-as', async (event, data) => {
 ipcMain.handle('file-save', async (event, data) => {
   // ファイルの内容を返却
   try {
-    writeFileSync(data.path, data.text)
+    writeFileSync(data.path, data.text + generateImprintHtml())
     mainWindow.webContents.send('set-filename', path)
 
     return {
@@ -230,6 +231,10 @@ ipcMain.handle('file-save', async (event, data) => {
   } catch (error) {
     return { status: false, message: error.message }
   }
+})
+
+ipcMain.handle('export-pdf', async (event, data) => {
+  exportPdf(data.text)
 })
 
 export const openSubWindow = () => {

@@ -34,10 +34,19 @@ const Hello = () => {
       })
     }
 
+    const onStartExportPdf = async () => {
+      await ipcRenderer.invoke('export-pdf', {
+        text: value,
+      })
+    }
+
     ipcRenderer.on('start-file-save-as', onStartFileSave)
+
+    ipcRenderer.on('start-export-pdf', onStartExportPdf)
 
     return () => {
       ipcRenderer.removeListener('start-file-save-as', onStartFileSave)
+      ipcRenderer.removeListener('start-export-pdf', onStartExportPdf)
     }
   }, [value])
 
