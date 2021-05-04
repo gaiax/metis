@@ -37,8 +37,8 @@ const generatePageStyle = (option: generateHtmlOptionType) => {
     padding: <%= mt %>mm <%= mrl %>mm <%= mb %>mm <%= mrl %>mm;\n\
     border: solid;\n\
     border-color: black;\n\
-    width: 172mm;\n\
-    height: 251mm;\n\
+    width: 182mm;\n\
+    height: 257mm;\n\
   }\n\
   </style>\n'
   return ejs.render(styleTemp, {
