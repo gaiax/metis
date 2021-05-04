@@ -5,6 +5,8 @@
 
 @import 'codemirror/lib/codemirror.css';
 @import 'codemirror/theme/material.css';
+@import 'codemirror/addon/lint/lint.css';
+@import 'codemirror/addon/hint/show-hint.css';
 
 html,
 body {
