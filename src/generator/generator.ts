@@ -34,7 +34,7 @@ const generatePageStyle = (option: generateHtmlOptionType) => {
     '\
   <style>\n\
   .page{\n\
-    padding: <%= mt %> <%= mrl %> <%= mb %> <%= mrl %>;\n\
+    padding: <%= mt %>mm <%= mrl %>mm <%= mb %>mm <%= mrl %>mm;\n\
     border: solid;\n\
     border-color: black;\n\
     width: 172mm;\n\
