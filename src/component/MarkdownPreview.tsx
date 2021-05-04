@@ -14,7 +14,7 @@ export const MarkdownPreview: React.FC<Props> = (props) => {
       marginBottom: 10,
       contents: [],
     }
-    const html = generateHtml(props.md, generateHtmlOption)
+    const html = generateHtml(props.md, generateHtmlOption, false)
     setPreviewHtml(html)
   }, [props.md])
   const divRef = useRef()

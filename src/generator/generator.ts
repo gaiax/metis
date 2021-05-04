@@ -15,12 +15,14 @@ marked.setOptions({
 
 export const generateHtml: generateHtmlType = (
   md: string,
-  option: generateHtmlOptionType
+  option: generateHtmlOptionType,
+  print: boolean
 ) => {
   const mds = md.split('---')
   let html =
     '<link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/default.min.css">\n'
-  html += generatePageStyle(option)
+  if (print) html += generatePrintPageStyle(option)
+  else html += generatePageStyle(option)
   mds.forEach((m) => {
     html += '<div class="page">\n'
     html += marked(m)
@@ -28,6 +30,23 @@ export const generateHtml: generateHtmlType = (
   })
   console.log(html)
   return html
+}
+const generatePrintPageStyle = (option: generateHtmlOptionType) => {
+  const styleTemp =
+    '\
+  <style>\n\
+  .page{\n\
+    padding: <%= mt %>mm <%= mrl %>mm <%= mb %>mm <%= mrl %>mm;\n\
+    width: 182mm;\n\
+    height: 257mm;\n\
+  }\n\
+  </style>\n'
+  //page-break-after: always;\n\
+  return ejs.render(styleTemp, {
+    mt: option.marginTop,
+    mrl: option.marginRightLeft,
+    mb: option.marginBottom,
+  })
 }
 const generatePageStyle = (option: generateHtmlOptionType) => {
   const styleTemp =
@@ -49,7 +68,7 @@ const generatePageStyle = (option: generateHtmlOptionType) => {
 }
 
 export type generateHtmlType = {
-  (md: string, option: generateHtmlOptionType): string
+  (md: string, option: generateHtmlOptionType, print: boolean): string
 }
 
 export type generateHtmlOptionType = {
@@ -95,8 +114,9 @@ export const exportPdf = (md: string, path: string) => {
     marginBottom: 10,
     contents: [],
   }
-  const options: CreateOptions = { format: 'A5' }
-  const html = generateHtml(md, generateHtmlOption) + generateImprintHtml()
+  const options: CreateOptions = { height: '257mm', width: '182mm' }
+  const html =
+    generateHtml(md, generateHtmlOption, true) + generateImprintHtml()
   pdf.create(html, options).toFile(path, function (err, res) {
     if (err) return console.log(err)
     console.log(res)
