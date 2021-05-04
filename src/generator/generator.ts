@@ -95,7 +95,7 @@ export const exportPdf = (md: string, path: string) => {
     marginBottom: 10,
     contents: [],
   }
-  const options: CreateOptions = { format: 'A5' }
+  const options: CreateOptions = { height: '257mm', width: '182mm' }
   const html = generateHtml(md, generateHtmlOption) + generateImprintHtml()
   pdf.create(html, options).toFile(path, function (err, res) {
     if (err) return console.log(err)
