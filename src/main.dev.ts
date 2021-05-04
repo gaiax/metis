@@ -221,7 +221,7 @@ ipcMain.handle('file-save-as', async (event, data) => {
 ipcMain.handle('file-save', async (event, data) => {
   // ファイルの内容を返却
   try {
-    writeFileSync(data.path, data.text + generateImprintHtml())
+    writeFileSync(data.path, data.text)
     mainWindow.webContents.send('set-filename', path)
 
     return {
@@ -234,7 +234,7 @@ ipcMain.handle('file-save', async (event, data) => {
 })
 
 ipcMain.handle('export-pdf', async (event, data) => {
-  const path: string | undefined = dialog.showSaveDialogSync(mainWindow, {
+  const path = dialog.showSaveDialogSync(mainWindow, {
     defaultPath: 'output.pdf',
     buttonLabel: '書き出し', // ボタンのラベル
     filters: [{ name: 'Markdown files', extensions: ['pdf'] }],
@@ -242,7 +242,19 @@ ipcMain.handle('export-pdf', async (event, data) => {
       'createDirectory', // ディレクトリの作成を許可 (macOS)
     ],
   })
-  exportPdf(data.text, path)
+
+  if (path === undefined) {
+    return { status: undefined }
+  }
+  try {
+    exportPdf(data.text, path)
+    return {
+      status: true,
+      path: path,
+    }
+  } catch (error) {
+    return { status: false, message: error.message }
+  }
 })
 
 export const openSubWindow = () => {
