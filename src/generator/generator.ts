@@ -1,6 +1,12 @@
 import marked from 'marked'
 import highlightjs from 'highlightjs'
 import ejs from 'ejs'
+import pdf, { CreateOptions } from 'html-pdf'
+import Store from 'electron-store'
+import { ConfigSchema } from '../types/ConfigSchema'
+
+const store = new Store<ConfigSchema>()
+
 marked.setOptions({
   highlight: function (code) {
     return highlightjs.highlightAuto(code).value
@@ -11,7 +17,6 @@ export const generateHtml: generateHtmlType = (
   md: string,
   option: generateHtmlOptionType
 ) => {
-  md = formatMD(md)
   const mds = md.split('---')
   let html =
     '<link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/default.min.css">\n'
@@ -29,11 +34,11 @@ const generatePageStyle = (option: generateHtmlOptionType) => {
     '\
   <style>\n\
   .page{\n\
-    padding: <%= mt %> <%= mrl %> <%= mb %> <%= mrl %>;\n\
+    padding: <%= mt %>mm <%= mrl %>mm <%= mb %>mm <%= mrl %>mm;\n\
     border: solid;\n\
     border-color: black;\n\
-    width: 172mm;\n\
-    height: 251mm;\n\
+    width: 182mm;\n\
+    height: 257mm;\n\
   }\n\
   </style>\n'
   return ejs.render(styleTemp, {
@@ -41,43 +46,6 @@ const generatePageStyle = (option: generateHtmlOptionType) => {
     mrl: option.marginRightLeft,
     mb: option.marginBottom,
   })
-}
-const formatMD = (md: string) => {
-  //無駄な行を前行に統合
-  md = md.replace('\r', '')
-  const mds = md.split('\n')
-  for (let i = 1; i < mds.length; i++) {
-    if (
-      !checkSpecialLine(mds[i - 1]) &&
-      !checkSpecialLine(mds[i]) &&
-      !checkIncludeReturn(mds[i - 1])
-    ) {
-      mds[i - 1] += mds[i]
-      mds.splice(i, 1)
-    }
-  }
-  md = ''
-  mds.forEach((m) => {
-    md = md + m + '\n'
-  })
-  return md
-}
-const checkIncludeReturn: { (target: string): boolean } = (target: string) => {
-  //改行する行か確認する
-  if (target.length < 2) return false
-  if (target.substring(target.length - 2) === '  ') return true
-  return false
-}
-
-export const checkSpecialLine = (target: string) => {
-  // h1やリストなどか確認する
-  if (target.length === 0) return false
-  const withoutSpaceTarget = target.replace(' ', '').replace('\t', '')
-  const checkTag = /^#|^-|^>/g
-  if (checkTag.test(withoutSpaceTarget)) return true
-  const checkList = /\d. /g
-  if (checkList.test(withoutSpaceTarget)) return true
-  return false
 }
 
 export type generateHtmlType = {
@@ -98,4 +66,39 @@ export type content = {
 export type vector2 = {
   x: number
   y: number
+}
+
+export const generateImprintHtml = () => {
+  const keys: Array<[string, string]> = [
+    ['author', '著者'],
+    ['contact', '連絡先'],
+    ['isdn', 'ISDN'],
+    ['printShop', '印刷所'],
+    ['publishedAt', '発行日'],
+    ['publisher', '発行元'],
+    ['title', 'タイトル'],
+    ['version', '版'],
+  ]
+  let generateHtml = ''
+
+  for (const key of keys) {
+    generateHtml += `<p>${key[1]}: ${store.get(key[0])} </p>\n`
+  }
+
+  return generateHtml
+}
+
+export const exportPdf = (md: string, path: string) => {
+  const generateHtmlOption: generateHtmlOptionType = {
+    marginTop: 10,
+    marginRightLeft: 10,
+    marginBottom: 10,
+    contents: [],
+  }
+  const options: CreateOptions = { format: 'A5' }
+  const html = generateHtml(md, generateHtmlOption) + generateImprintHtml()
+  pdf.create(html, options).toFile(path, function (err, res) {
+    if (err) return console.log(err)
+    console.log(res)
+  })
 }

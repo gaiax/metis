@@ -8,7 +8,7 @@ import {
 } from 'electron'
 import { readFileSync } from 'fs'
 
-import { openSubWindow } from './main.dev'
+import { openSubWindow, exportPdf } from './main.dev'
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string
@@ -129,6 +129,13 @@ export default class MenuBuilder {
           accelerator: 'Command+Shift+S',
           click: (_menuItem, browserWindow) => {
             browserWindow?.webContents.send('start-file-save-as')
+          },
+        },
+        {
+          label: 'Export  PDF',
+          accelerator: 'Command+e',
+          click: (_menuItem, browserWindow) => {
+            browserWindow?.webContents.send('start-export-pdf')
           },
         },
         {
@@ -305,6 +312,13 @@ export default class MenuBuilder {
             accelerator: 'Ctrl+,',
             click: () => {
               openSubWindow()
+            },
+          },
+          {
+            label: '&Export',
+            accelerator: 'Ctrl+e',
+            click: (_menuItem, browserWindow) => {
+              browserWindow?.webContents.send('start-export-pdf')
             },
           },
           {

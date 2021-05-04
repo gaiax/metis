@@ -17,6 +17,11 @@ import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
 import MenuBuilder from './menu'
 import { writeFileSync } from 'fs'
+import Store from 'electron-store'
+import { ConfigSchema } from './types/ConfigSchema'
+import { exportPdf } from './generator/generator'
+
+const store = new Store<ConfigSchema>()
 
 export default class AppUpdater {
   constructor() {
@@ -126,10 +131,53 @@ app.on('window-all-closed', () => {
 
 app.whenReady().then(createWindow).catch(console.log)
 
+const setConfigStoreDeafults = () => {
+  const keys: (keyof ConfigSchema)[] = [
+    'author',
+    'backCover',
+    'contact',
+    'frontCover',
+    'isdn',
+    'printShop',
+    'publishedAt',
+    'publisher',
+    'title',
+    'version',
+  ]
+
+  for (const key of keys) {
+    if (typeof store.get(key) === 'undefined') {
+      store.set(key, '')
+    }
+  }
+}
+
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) createWindow()
+})
+
+ipcMain.handle('set-config', (_, data: ConfigSchema) => {
+  for (const [key, value] of Object.entries(data)) {
+    store.set(key, value)
+  }
+})
+
+ipcMain.handle('request-config', (event) => {
+  const config: ConfigSchema = {
+    title: store.get('title'),
+    publishedAt: store.get('publishedAt'),
+    publisher: store.get('publisher'),
+    author: store.get('author'),
+    contact: store.get('contact'),
+    printShop: store.get('printShop'),
+    version: store.get('version'),
+    frontCover: store.get('frontCover'),
+    backCover: store.get('backCover'),
+    isdn: store.get('isdn'),
+  }
+  event.sender.send('update-config', config)
 })
 
 /**
@@ -185,15 +233,32 @@ ipcMain.handle('file-save', async (event, data) => {
   }
 })
 
-import Store from 'electron-store'
+ipcMain.handle('export-pdf', async (event, data) => {
+  const path = dialog.showSaveDialogSync(mainWindow, {
+    defaultPath: 'output.pdf',
+    buttonLabel: '書き出し', // ボタンのラベル
+    filters: [{ name: 'Markdown files', extensions: ['pdf'] }],
+    properties: [
+      'createDirectory', // ディレクトリの作成を許可 (macOS)
+    ],
+  })
 
-const store = new Store()
-store.set('key', 'value')
+  if (path === undefined) {
+    return { status: undefined }
+  }
+  try {
+    exportPdf(data.text, path)
+    return {
+      status: true,
+      path: path,
+    }
+  } catch (error) {
+    return { status: false, message: error.message }
+  }
+})
 
 export const openSubWindow = () => {
-  console.log('run')
-  console.log(store.get('key'))
-
+  setConfigStoreDeafults()
   const subWindow = new BrowserWindow({
     parent: mainWindow,
     webPreferences: {
