@@ -6,6 +6,8 @@ import 'codemirror/mode/markdown/markdown'
 import 'codemirror/mode/javascript/javascript'
 import './App.global.css'
 import { ipcRenderer } from 'electron'
+import { ConfigSchema } from './types/ConfigSchema'
+import { Button, Card, CardContent, TextField } from '@material-ui/core'
 
 const Hello = () => {
   const [filename, setFilename] = useState<string | null>(null)
@@ -73,13 +75,79 @@ const Hello = () => {
 }
 
 const ConfigForm = () => {
-  const [name, setName] = useState('John')
+  const [loading, setLoading] = useState(true)
+  const [config, setConfig] = useState<ConfigSchema>()
+
+  const [keys] = useState<(keyof ConfigSchema)[]>([
+    'author',
+    'backCover',
+    'contact',
+    'frontCover',
+    'isdn',
+    'printShop',
+    'publishedAt',
+    'publisher',
+    'title',
+    'version',
+  ])
+
+  const setItem = <K extends keyof ConfigSchema>(
+    key: K,
+    value: ConfigSchema[K]
+  ) => {
+    setConfig((config) => {
+      if (!config) {
+        return config
+      }
+
+      return {
+        ...config,
+        [key]: value,
+      }
+    })
+  }
+
+  useEffect(() => {
+    const onUpdateConfig = async (_, config: ConfigSchema) => {
+      setLoading(false)
+      setConfig(config)
+    }
+
+    ipcRenderer.on('update-config', onUpdateConfig)
+
+    ipcRenderer.invoke('request-config')
+
+    return () => {
+      ipcRenderer.removeListener('update-config', onUpdateConfig)
+    }
+  }, [])
+
+  const save = () => {
+    ipcRenderer.invoke('set-config', config)
+  }
 
   return (
-    <div>
-      <h1>Hello, {name}</h1>
-      <input value={name} onChange={(event) => setName(event.target.value)} />
-    </div>
+    <>
+      <h1>Preference</h1>
+      {!config ? (
+        <div>Loading...</div>
+      ) : (
+        <Card>
+          <CardContent>
+            {keys.map((key) => (
+              <TextField
+                key={key}
+                label={key}
+                value={config[key]}
+                onChange={({ target: { value } }) => setItem(key, value)}
+                variant="outlined"
+              />
+            ))}
+            <Button onClick={save}>save</Button>
+          </CardContent>
+        </Card>
+      )}
+    </>
   )
 }
 
